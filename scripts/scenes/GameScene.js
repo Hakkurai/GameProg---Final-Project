@@ -5,7 +5,7 @@ class GameScene extends Phaser.Scene {
   
     preload() {
       // Load assets needed for the game
-      this.load.image('player', 'path/to/player/image.png') // Replace with the actual path to your player image
+      this.load.image('player', 'assets/character/shrek.png') // Replace with the actual path to your player image
     }
   
     create() {
@@ -14,6 +14,8 @@ class GameScene extends Phaser.Scene {
   
       // Set camera to follow the player
       this.cameras.main.startFollow(this.player)
+      this.cameras.main.setZoom(1);
+      this.cameras.main.setBackgroundColor('#87CEEB'); 
   
       // Example input to move the player
       this.cursors = this.input.keyboard.createCursorKeys()
@@ -23,8 +25,12 @@ class GameScene extends Phaser.Scene {
       // Update the player's movement based on cursor input
       if (this.cursors.left.isDown) {
         this.player.setVelocityX(-160)
+
+        this.player.flipX = true;
       } else if (this.cursors.right.isDown) {
         this.player.setVelocityX(160)
+        this.player.flipX = false;
+
       } else {
         this.player.setVelocityX(0)
       }
