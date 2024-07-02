@@ -1,51 +1,49 @@
 class GameScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'GameScene' })
+      super({ key: 'GameScene' });
   }
 
   preload() {
-    // Load assets needed for the game
-    this.load.image('player', 'assets/character/pinkguy.jpg') // Replace with the actual path to your player image
+      this.load.image('player', 'assets/character/pinkguy.jpg');
+      this.load.image('background', 'assets/background/bg.jpg'); // Replace with your actual path
   }
 
   create() {
-    // Set up your game objects and logic
-    this.player = this.physics.add.sprite(400, 300, 'player')
+      // Create background image and set its size to cover the game world
+      this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(800, 600); 
 
-    // Set camera to follow the player
-    this.cameras.main.startFollow(this.player)
-    this.cameras.main.setZoom(2)
-    this.cameras.main.setBackgroundColor('#87CEEB')
+      this.player = this.physics.add.sprite(400, 300, 'player');
 
-    // Example input to move the player
-    this.cursors = this.input.keyboard.createCursorKeys()
+      // Set camera properties
+      this.cameras.main.startFollow(this.player);
+      this.cameras.main.setZoom(2);
+
+      // Enable world bounds and collision
+      this.physics.world.setBounds(0, 0, 800, 600); 
+      this.player.setCollideWorldBounds(true);
+
+      // Input setup
+      this.cursors = this.input.keyboard.createCursorKeys();
   }
 
   update() {
-    // Update the player's movement based on cursor input
-    let velocityX = 0
-    let velocityY = 0
-  
-    if (this.cursors.left.isDown) {
-      velocityX = -160
-      this.player.flipX = true
-      console.log('Left key pressed')
-    } else if (this.cursors.right.isDown) {
-      velocityX = 160
-      this.player.flipX = false
-      console.log('Right key pressed')
-    }
-  
-    if (this.cursors.up.isDown) {
-      velocityY = -160
-      console.log('Up key pressed')
-    } else if (this.cursors.down.isDown) {
-      velocityY = 160
-      console.log('Down key pressed')
-    }
-  
-    this.player.setVelocity(velocityX, velocityY)
-  }  
+      // Reset velocity at the start of each frame
+      this.player.setVelocity(0);
+
+      if (this.cursors.left.isDown) {
+          this.player.setVelocityX(-160);
+          this.player.flipX = true; 
+      } else if (this.cursors.right.isDown) {
+          this.player.setVelocityX(160);
+          this.player.flipX = false;
+      }
+
+      if (this.cursors.up.isDown) {
+          this.player.setVelocityY(-160);
+      } else if (this.cursors.down.isDown) {
+          this.player.setVelocityY(160);
+      }
+  }
 }
 
-export default GameScene
+export default GameScene;
