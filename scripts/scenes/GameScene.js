@@ -27,22 +27,30 @@ class GameScene extends Phaser.Scene {
   }
 
   update() {
-      // Reset velocity at the start of each frame
-      this.player.setVelocity(0);
-
-      if (this.cursors.left.isDown) {
-          this.player.setVelocityX(-160);
-          this.player.flipX = true; 
-      } else if (this.cursors.right.isDown) {
-          this.player.setVelocityX(160);
-          this.player.flipX = false;
-      }
-
-      if (this.cursors.up.isDown) {
-          this.player.setVelocityY(-160);
-      } else if (this.cursors.down.isDown) {
-          this.player.setVelocityY(160);
-      }
+    // Update the player's movement based on cursor input
+    let velocityX = 0
+    let velocityY = 0
+  
+    if (this.cursors.left.isDown) {
+      velocityX = -160
+      this.player.flipX = true
+    } else if (this.cursors.right.isDown) {
+      velocityX = 160
+      this.player.flipX = false
+    }
+  
+    if (this.cursors.up.isDown) {
+      velocityY = -160
+    } else if (this.cursors.down.isDown) {
+      velocityY = 160
+    }
+  
+    this.player.setVelocity(velocityX, velocityY)
+  
+    // Switch to MiniGameScene after pressing a certain key (e.g., 'E')
+    if (this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E).isDown) {
+      this.scene.start('MiniGameScene')
+    }
   }
 }
 
