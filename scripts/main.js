@@ -4,8 +4,8 @@ import MiniGameScene from './scenes/MiniGameScene.js'
 
 var config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: 1300,
+  height: 720,
   scene: [MainMenuScene, GameScene, MiniGameScene],
   physics: {
     default: 'arcade',

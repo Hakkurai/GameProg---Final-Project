@@ -5,32 +5,61 @@ class GameScene extends Phaser.Scene {
 
     preload() {
         this.load.image('player', 'assets/character/pinkguy.jpg');
-        this.load.image('background', 'assets/background/bg.jpg'); // Replace with your actual path
+        this.load.image('apple', 'assets/objects/apple.jpg');
+        this.load.image('orange', 'assets/objects/orange.jpg');
+        this.load.image('background', 'assets/background/bg.jpg'); 
     }
 
     create() {
-        this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(800, 600);
-        this.player = this.physics.add.sprite(400, 300, 'player');
-
-        this.cameras.main.startFollow(this.player);
-        this.cameras.main.setZoom(2);
-
-        this.physics.world.setBounds(0, 0, 800, 600);
-        this.player.setCollideWorldBounds(true);
-
-        this.cursors = this.input.keyboard.createCursorKeys();
-
+        // Add background
+        this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(800, 600)
+      
+        // Add player
+        this.player = this.physics.add.sprite(400, 300, 'player')
+      
+        // Add apple
+        this.apple = this.physics.add.sprite(200, 150, 'apple')
+        this.apple.setCollideWorldBounds(true)
+      
+        // Add orange
+        this.orange = this.physics.add.sprite(600, 450, 'orange')
+        this.orange.setCollideWorldBounds(true)
+      
+        // Set camera to follow the player
+        this.cameras.main.startFollow(this.player)
+        this.cameras.main.setZoom(2)
+      
+        // Set world bounds
+        this.physics.world.setBounds(0, 0, 800, 600)
+        this.player.setCollideWorldBounds(true)
+      
+        // Create cursor keys input
+        this.cursors = this.input.keyboard.createCursorKeys()
+      
+        // Pause and launch MiniGameScene on 'E' key press if near apple
         this.input.keyboard.on('keydown-E', () => {
-            this.scene.pause();
-            this.scene.launch('MiniGameScene');
-        });
-
+          if (this.checkOverlap(this.player, this.apple)) {
+            console.log('Player is near the apple and pressed E')
+            this.scene.pause()
+            this.scene.launch('MiniGameScene')
+          } else if (this.checkOverlap(this.player, this.orange)) {
+            console.log('Player is near the orange and pressed E')
+            this.orange.disableBody(true, true)
+          }
+        })
+      
         // Example: Listen for minigame-finished event
         this.events.on('minigame-finished', (data) => {
-            console.log("Player earned", data.pointsEarned, "points!");
-            // Update your game state based on the data received from the minigame
-        });
-    }
+          console.log("Player earned", data.pointsEarned, "points!")
+          // Update your game state based on the data received from the minigame
+        })
+      }
+      
+      checkOverlap(spriteA, spriteB) {
+        const boundsA = spriteA.getBounds()
+        const boundsB = spriteB.getBounds()
+        return Phaser.Geom.Intersects.RectangleToRectangle(boundsA, boundsB)
+      }
 
     update() {
         let velocityX = 0;
