@@ -26,6 +26,7 @@ class GameScene extends Phaser.Scene {
   
       // Add pumpkin
       this.pumpkin = this.physics.add.sprite(600, 450, 'pumpkin') // Use pumpkin image
+      this.pumpkin.setScale(0.05)
       this.pumpkin.setCollideWorldBounds(true)
   
       // Set camera to follow the player
