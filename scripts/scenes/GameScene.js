@@ -13,44 +13,50 @@ class GameScene extends Phaser.Scene {
     create() {
         // Set gravity for the world
         this.physics.world.gravity.y = 0
-
-        // Add background
-        this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(800, 600)
       
+        // Add background
+        this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(1300, 720)
+        
         // Add player
         this.player = this.physics.add.sprite(400, 300, 'player')
-      
+        
         // Add apple
         this.apple = this.physics.add.sprite(200, 150, 'apple')
         this.apple.setCollideWorldBounds(true)
-      
+        
         // Add orange
         this.orange = this.physics.add.sprite(600, 450, 'orange')
         this.orange.setCollideWorldBounds(true)
-      
+        
         // Set camera to follow the player
         this.cameras.main.startFollow(this.player)
         this.cameras.main.setZoom(2)
-      
+        
         // Set world bounds
         this.physics.world.setBounds(0, 0, 800, 600)
         this.player.setCollideWorldBounds(true)
-      
+        
         // Create cursor keys input
         this.cursors = this.input.keyboard.createCursorKeys()
       
-        // Pause and launch MiniGameScene on 'E' key press if near apple
+        // Flag to check if orange is collected
+        this.orangeCollected = false
+        
+        // Event listener for 'E' key press
         this.input.keyboard.on('keydown-E', () => {
-          if (this.checkOverlap(this.player, this.apple)) {
+          if (this.checkOverlap(this.player, this.orange) && !this.orangeCollected) {
+            console.log('Player is near the orange and pressed E')
+            this.orange.disableBody(true, true)
+            this.orangeCollected = true
+          } else if (this.checkOverlap(this.player, this.apple) && this.orangeCollected) {
             console.log('Player is near the apple and pressed E')
             this.scene.pause()
             this.scene.launch('MiniGameScene')
-          } else if (this.checkOverlap(this.player, this.orange)) {
-            console.log('Player is near the orange and pressed E')
-            this.orange.disableBody(true, true)
+          } else if (this.checkOverlap(this.player, this.apple) && !this.orangeCollected) {
+            console.log('Player needs to collect the orange first')
           }
         })
-      
+        
         // Example: Listen for minigame-finished event
         this.events.on('minigame-finished', (data) => {
           console.log("Player earned", data.pointsEarned, "points!")
