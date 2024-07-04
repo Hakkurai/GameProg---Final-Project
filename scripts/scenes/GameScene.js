@@ -7,7 +7,7 @@ class GameScene extends Phaser.Scene {
         this.load.image('player', 'assets/character/pinkguy.jpg');
         this.load.image('apple', 'assets/objects/apple.jpg');
         this.load.image('orange', 'assets/objects/orange.jpg');
-        this.load.image('background', 'assets/background/bg.jpg'); 
+        this.load.image('background', 'assets/background/bg.png'); 
     }
 
     create() {
@@ -30,7 +30,7 @@ class GameScene extends Phaser.Scene {
         
         // Set camera to follow the player
         this.cameras.main.startFollow(this.player)
-        this.cameras.main.setZoom(2)
+        this.cameras.main.setZoom(1.5)
         
         // Set world bounds
         this.physics.world.setBounds(0, 0, 800, 600)
