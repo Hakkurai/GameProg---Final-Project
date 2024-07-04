@@ -11,6 +11,9 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+        // Set gravity for the world
+        this.physics.world.gravity.y = 0
+
         // Add background
         this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(800, 600)
       
