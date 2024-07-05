@@ -13,7 +13,7 @@ class MainMenuScene extends Phaser.Scene {
 
   create() {
     // Add background image
-    this.add.image(650, 350, 'menuBG').setOrigin(0.5).setDisplaySize(1200, 720)
+    this.add.image(650, 350, 'menuBG').setOrigin(0.5)
 
   // Create Play button
   const playButton = this.add.image(1000, 200, 'playBTN')
