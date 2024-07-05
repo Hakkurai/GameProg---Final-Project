@@ -1,4 +1,3 @@
-
 class GameScene extends Phaser.Scene {
   constructor() {
     super({ key: 'GameScene' });
@@ -50,14 +49,37 @@ class GameScene extends Phaser.Scene {
     this.onionCollected = false;
     this.beetrootCollected = false;
 
-    // Event Listener for 'E' key press (your existing interaction logic)
-    this.input.keyboard.on('keydown-E', () => { /* ... your existing interaction code ... */ });
+    // Event Listener for 'E' key press
+    this.input.keyboard.on('keydown-E', () => {
+      if (this.checkOverlap(this.player, this.pumpkin) && !this.pumpkinCollected) {
+        console.log('Player collected the pumpkin');
+        this.pumpkinCollected = true;
+        this.pumpkin.disableBody(true, true);
+      } else if (this.checkOverlap(this.player, this.onion) && !this.onionCollected) {
+        console.log('Player collected the onion');
+        this.onionCollected = true;
+        this.onion.disableBody(true, true);
+      } else if (this.checkOverlap(this.player, this.beetroot) && !this.beetrootCollected) {
+        console.log('Player collected the beetroot');
+        this.beetrootCollected = true;
+        this.beetroot.disableBody(true, true);
+      } else if (this.checkOverlap(this.player, this.cauldron)) {
+        if (this.pumpkinCollected && this.onionCollected && this.beetrootCollected) {
+          console.log('Player has all vegetables and can proceed to the minigame');
+          this.player.setVisible(false); // Hide player before entering MiniGameScene
+          this.scene.pause();
+          this.scene.launch('MiniGameScene');
+        } else {
+          console.log('Player needs to collect all vegetables first');
+        }
+      }
+    });
 
-    // Minigame Finished Event Listener (your existing code)
+    // Minigame Finished Event Listener
     this.events.on('minigame-finished', (data) => {
       console.log("Player earned", data.pointsEarned, "points!");
       this.player.setVisible(true); 
-      // ... (update your game state based on the minigame results)
+      // Update your game state based on the minigame results
     });
   }
 
@@ -65,23 +87,18 @@ class GameScene extends Phaser.Scene {
     let velocityX = 0;
     let velocityY = 0;
 
-    // Movement based on cursor keys (your existing code)
+    // Movement based on cursor keys
     if (this.cursors.left.isDown) {
       velocityX = -160;
+      this.player.setFlipX(true); // Ensure player faces left
     } else if (this.cursors.right.isDown) {
       velocityX = 160;
+      this.player.setFlipX(false);  // Flip player to face right
     }
     if (this.cursors.up.isDown) {
       velocityY = -160;
     } else if (this.cursors.down.isDown) {
       velocityY = 160;
-    }
-
-    // Handle player animation and flipping
-    if (this.cursors.left.isDown) {
-      this.player.setFlipX(true); // Ensure player faces left
-    } else if (this.cursors.right.isDown) {
-      this.player.setFlipX(false);  // Flip player to face right
     }
 
     // Play the appropriate animation based on movement
@@ -90,27 +107,19 @@ class GameScene extends Phaser.Scene {
     } else if (velocityY > 0) { // Down
       this.player.anims.play('down', true);
     } else if (velocityX !== 0) { // Left or Right (use flipX to decide)
-      this.player.anims.play(this.player.flipX ? 'right' : 'left', true);
+      this.player.anims.play(this.player.flipX ? 'left' : 'right', true);
     } else { // No movement
       this.player.anims.play('turn', true);
     }
   
     this.player.setVelocity(velocityX, velocityY);
-
   }
 
- checkOverlap(spriteA, spriteB) {
-
- const boundsA = spriteA.getBounds()
-    
-const boundsB = spriteB.getBounds()
-    
-return Phaser.Geom.Intersects.RectangleToRectangle(boundsA, boundsB)
-    
- }
-    
-    
- 
+  checkOverlap(spriteA, spriteB) {
+    const boundsA = spriteA.getBounds();
+    const boundsB = spriteB.getBounds();
+    return Phaser.Geom.Intersects.RectangleToRectangle(boundsA, boundsB);
+  }
 }
 
 export default GameScene;
