@@ -14,8 +14,6 @@ var config = {
       debug: false
     }
   },
-  pixelArt: true, 
-  roundPixels: true // Round pixels to avoid sub-pixel rendering
 }
 
 var game = new Phaser.Game(config)
