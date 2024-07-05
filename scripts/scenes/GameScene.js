@@ -5,7 +5,7 @@ class GameScene extends Phaser.Scene {
   
     preload() {
       this.load.image('player', 'assets/character/pinkguy.jpg')
-      this.load.image('apple', 'assets/objects/apple.jpg')
+      this.load.image('cauldron', 'assets/objects/cauldron.png') // Load cauldron image
       this.load.image('pumpkin', 'assets/objects/pumpkin.png') // Load pumpkin image
       this.load.image('background', 'assets/background/bg.png')
     }
@@ -20,18 +20,19 @@ class GameScene extends Phaser.Scene {
       // Add player
       this.player = this.physics.add.sprite(400, 300, 'player')
   
-      // Add apple
-      this.apple = this.physics.add.sprite(200, 150, 'apple')
-      this.apple.setCollideWorldBounds(true)
+      // Add cauldron
+      this.cauldron = this.physics.add.sprite(200, 150, 'cauldron')
+      this.cauldron.setScale(0.3)
+      this.cauldron.setCollideWorldBounds(true)
   
       // Add pumpkin
       this.pumpkin = this.physics.add.sprite(600, 450, 'pumpkin') // Use pumpkin image
-      this.pumpkin.setScale(0.05)
+      this.pumpkin.setScale(0.04)
       this.pumpkin.setCollideWorldBounds(true)
   
       // Set camera to follow the player
       this.cameras.main.startFollow(this.player)
-      this.cameras.main.setZoom(1.5)
+      this.cameras.main.setZoom(2)
   
       // Set world bounds
       this.physics.world.setBounds(0, 0, 800, 600)
@@ -49,12 +50,12 @@ class GameScene extends Phaser.Scene {
           console.log('Player is near the pumpkin and pressed E')
           this.pumpkin.disableBody(true, true)
           this.pumpkinCollected = true
-        } else if (this.checkOverlap(this.player, this.apple) && this.pumpkinCollected) {
-          console.log('Player is near the apple and pressed E')
+        } else if (this.checkOverlap(this.player, this.cauldron) && this.pumpkinCollected) {
+          console.log('Player is near the cauldron and pressed E')
           this.player.setVisible(false) // Hide player before entering MiniGameScene
           this.scene.pause()
           this.scene.launch('MiniGameScene')
-        } else if (this.checkOverlap(this.player, this.apple) && !this.pumpkinCollected) {
+        } else if (this.checkOverlap(this.player, this.cauldron) && !this.pumpkinCollected) {
           console.log('Player needs to collect the pumpkin first')
         }
       })
