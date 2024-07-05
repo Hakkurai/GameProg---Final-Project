@@ -113,6 +113,7 @@ class GameScene extends Phaser.Scene {
     }
   
     this.player.setVelocity(velocityX, velocityY);
+    
   }
 
   checkOverlap(spriteA, spriteB) {
