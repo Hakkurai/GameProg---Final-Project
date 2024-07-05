@@ -10,12 +10,16 @@ class GameScene extends Phaser.Scene {
     this.load.image('onion', 'assets/objects/onion.png');
     this.load.image('beetroot', 'assets/objects/beetroot.png');
     this.load.image('background', 'assets/background/bg.png');
+    this.load.audio('backgroundMusic', 'assets/audio/backgroundMusic.mp3'); 
   }
 
   create() {
+    //bgm
+    this.backgroundMusic = this.sound.add('backgroundMusic', { loop: true });
+  this.backgroundMusic.play(); 
     // Physics and World Setup
     this.physics.world.gravity.y = 0;
-    this.physics.world.setBounds(0, 0, 800, 600); 
+    this.physics.world.setBounds(0, 0, 1200, 800); 
 
     // Background
     this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(1300, 720);
@@ -25,10 +29,10 @@ class GameScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
 
     // Player animations 
-    this.anims.create({ key: 'down',  frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
-    this.anims.create({ key: 'left',  frames: this.anims.generateFrameNumbers('player', { start: 4, end: 7 }), frameRate: 10, repeat: -1 });
-    this.anims.create({ key: 'right', frames: this.anims.generateFrameNumbers('player', { start: 4, end: 7 }), frameRate: 10, repeat: -1 });
-    this.anims.create({ key: 'up', frames: this.anims.generateFrameNumbers('player', { start: 8, end: 11 }), frameRate: 10, repeat: -1 });
+    this.anims.create({ key: 'down',  frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }), frameRate: 5, repeat: -1 });
+    this.anims.create({ key: 'left',  frames: this.anims.generateFrameNumbers('player', { start: 4, end: 7 }), frameRate: 5, repeat: -1 });
+    this.anims.create({ key: 'right', frames: this.anims.generateFrameNumbers('player', { start: 4, end: 7 }), frameRate: 5, repeat: -1 });
+    this.anims.create({ key: 'up', frames: this.anims.generateFrameNumbers('player', { start: 8, end: 11 }), frameRate: 5, repeat: -1 });
     this.anims.create({ key: 'turn',  frames: [{ key: 'player', frame: 0 }], frameRate: 20 }); 
 
     // Objects (cauldron, vegetables)
@@ -81,35 +85,54 @@ class GameScene extends Phaser.Scene {
       this.player.setVisible(true); 
       // Update your game state based on the minigame results
     });
+    this.cursors = this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.W,
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      left: Phaser.Input.Keyboard.KeyCodes.A,
+      right: Phaser.Input.Keyboard.KeyCodes.D,
+      shift: Phaser.Input.Keyboard.KeyCodes.SHIFT
+    });
   }
 
   update() {
+    const sprintSpeed = 160;
+    const baseSpeed = 80; 
+    const sprintFrameRate = 10;
+    const baseFrameRate = 5;
+
     let velocityX = 0;
     let velocityY = 0;
 
-    // Movement based on cursor keys
-    if (this.cursors.left.isDown) {
-      velocityX = -160;
-      this.player.setFlipX(true); // Ensure player faces left
+    const isSprinting = this.cursors.shift.isDown;
+
+     // Movement based on WASD keys
+     if (this.cursors.left.isDown) {
+      velocityX = -(isSprinting ? sprintSpeed : baseSpeed);
+      this.player.setFlipX(true);
     } else if (this.cursors.right.isDown) {
-      velocityX = 160;
-      this.player.setFlipX(false);  // Flip player to face right
+      velocityX = isSprinting ? sprintSpeed : baseSpeed;
+      this.player.setFlipX(false);
     }
+
     if (this.cursors.up.isDown) {
-      velocityY = -160;
+      velocityY = -(isSprinting ? sprintSpeed : baseSpeed);
     } else if (this.cursors.down.isDown) {
-      velocityY = 160;
+      velocityY = isSprinting ? sprintSpeed : baseSpeed;
     }
 
     // Play the appropriate animation based on movement
     if (velocityY < 0) { // Up
       this.player.anims.play('up', true);
+      this.player.anims.msPerFrame = isSprinting ? 1000 / sprintFrameRate : 1000 / baseFrameRate; // Adjust frame rate
     } else if (velocityY > 0) { // Down
       this.player.anims.play('down', true);
-    } else if (velocityX !== 0) { // Left or Right (use flipX to decide)
+      this.player.anims.msPerFrame = isSprinting ? 1000 / sprintFrameRate : 1000 / baseFrameRate; // Adjust frame rate
+    } else if (velocityX !== 0) { // Left or Right
       this.player.anims.play(this.player.flipX ? 'left' : 'right', true);
+      this.player.anims.msPerFrame = isSprinting ? 1000 / sprintFrameRate : 1000 / baseFrameRate; // Adjust frame rate
     } else { // No movement
       this.player.anims.play('turn', true);
+      this.player.anims.msPerFrame = 1000 / baseFrameRate; // Reset to base frame rate for idle animation
     }
   
     this.player.setVelocity(velocityX, velocityY);
