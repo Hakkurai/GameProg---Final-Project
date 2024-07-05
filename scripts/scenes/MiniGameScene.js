@@ -12,7 +12,7 @@ class MiniGameScene extends Phaser.Scene {
         this.add.image(400, 300, 'background2').setOrigin(0.5).setDisplaySize(1300, 720);
 
 
-        this.miniPlayer.setCollideWorldBounds(true);
+        
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
