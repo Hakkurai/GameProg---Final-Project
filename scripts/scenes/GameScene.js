@@ -4,11 +4,11 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('player', 'assets/character/pinkguy.jpg')
-    this.load.image('cauldron', 'assets/objects/cauldron.png') // Load cauldron image
-    this.load.image('pumpkin', 'assets/objects/pumpkin.png') // Load pumpkin image
-    this.load.image('onion', 'assets/objects/onion.png') // Load onion image
-    this.load.image('beetroot', 'assets/objects/beetroot.png') // Load beetroot image
+    this.load.spritesheet('player', 'assets/character/character.png', { frameWidth: 32, frameHeight: 48 })
+    this.load.image('cauldron', 'assets/objects/cauldron.png')
+    this.load.image('pumpkin', 'assets/objects/pumpkin.png')
+    this.load.image('onion', 'assets/objects/onion.png')
+    this.load.image('beetroot', 'assets/objects/beetroot.png')
     this.load.image('background', 'assets/background/bg.png')
   }
 
@@ -20,26 +20,27 @@ class GameScene extends Phaser.Scene {
     this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(1300, 720)
 
     // Add player
-    this.player = this.physics.add.sprite(400, 300, 'player')
+    this.player = this.physics.add.sprite(400, 300, 'player').setOrigin(0.5, 0.5)
+    this.player.setCollideWorldBounds(true)
 
     // Add cauldron
     this.cauldron = this.physics.add.sprite(200, 150, 'cauldron')
-    this.cauldron.setScale(0.3)
+    this.cauldron.setScale(0.1)
     this.cauldron.setCollideWorldBounds(true)
 
     // Add pumpkin
     this.pumpkin = this.physics.add.sprite(600, 450, 'pumpkin')
-    this.pumpkin.setScale(0.04)
+    this.pumpkin.setScale(0.03)
     this.pumpkin.setCollideWorldBounds(true)
 
     // Add onion
     this.onion = this.physics.add.sprite(400, 450, 'onion')
-    this.onion.setScale(0.04)
+    this.onion.setScale(0.03)
     this.onion.setCollideWorldBounds(true)
 
     // Add beetroot
     this.beetroot = this.physics.add.sprite(400, 200, 'beetroot')
-    this.beetroot.setScale(0.04)
+    this.beetroot.setScale(0.03)
     this.beetroot.setCollideWorldBounds(true)
 
     // Set camera to follow the player
@@ -89,6 +90,41 @@ class GameScene extends Phaser.Scene {
       this.player.setVisible(true) // Show player when returning from MiniGameScene
       // Update your game state based on the data received from the minigame
     })
+
+    // Create player animations
+    this.anims.create({
+      key: 'left',
+      frames: this.anims.generateFrameNumbers('player', { start: 3, end: 5 }),
+      frameRate: 10,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'turn',
+      frames: [{ key: 'player', frame: 1 }],
+      frameRate: 20
+    })
+
+    this.anims.create({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('player', { start: 6, end: 8 }),
+      frameRate: 10,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'up',
+      frames: this.anims.generateFrameNumbers('player', { start: 9, end: 11 }),
+      frameRate: 10,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'down',
+      frames: this.anims.generateFrameNumbers('player', { start: 0, end: 2 }),
+      frameRate: 10,
+      repeat: -1
+    })
   }
 
   checkOverlap(spriteA, spriteB) {
@@ -103,16 +139,19 @@ class GameScene extends Phaser.Scene {
 
     if (this.cursors.left.isDown) {
       velocityX = -160
-      this.player.flipX = true
+      this.player.anims.play('left', true)
     } else if (this.cursors.right.isDown) {
       velocityX = 160
-      this.player.flipX = false
-    }
-
-    if (this.cursors.up.isDown) {
+      this.player.anims.play('right', true)
+    } else if (this.cursors.up.isDown) {
       velocityY = -160
+      this.player.anims.play('up', true)
     } else if (this.cursors.down.isDown) {
       velocityY = 160
+      this.player.anims.play('down', true)
+    } else {
+      this.player.setVelocity(0)
+      this.player.anims.play('turn')
     }
 
     this.player.setVelocity(velocityX, velocityY)

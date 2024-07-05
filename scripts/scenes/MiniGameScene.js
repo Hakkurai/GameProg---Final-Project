@@ -4,7 +4,6 @@ class MiniGameScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('miniPlayer', 'assets/character/pinkguy.jpg');
         this.load.image('background2', 'assets/background/bg2.png'); // Replace with your actual path
     }
 
