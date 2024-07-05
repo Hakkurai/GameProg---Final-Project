@@ -4,7 +4,7 @@ class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.spritesheet('player', 'assets/character/character.png', { frameWidth: 32, frameHeight: 48 })
+    this.load.spritesheet('player', 'assets/character/character.png', { frameWidth: 2048, frameHeight: 2048 })
     this.load.image('cauldron', 'assets/objects/cauldron.png')
     this.load.image('pumpkin', 'assets/objects/pumpkin.png')
     this.load.image('onion', 'assets/objects/onion.png')
@@ -20,8 +20,37 @@ class GameScene extends Phaser.Scene {
     this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(1300, 720)
 
     // Add player
-    this.player = this.physics.add.sprite(400, 300, 'player').setOrigin(0.5, 0.5)
+    this.player = this.physics.add.sprite(400, 300, 'player').setOrigin(0.5, 0.5).setScale(0.03)
     this.player.setCollideWorldBounds(true)
+    //Player anim
+    this.anims.create({
+      key: 'down',
+      frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }), // 1st row
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'left',
+      frames: this.anims.generateFrameNumbers('player', { start: 4, end: 7 }), // 2nd row
+      frameRate: 10,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('player', { start: 8, end: 11 }), // 3rd row
+      frameRate: 10,
+      repeat: -1
+    });
+    
+    // No 'up' animation in this 4x3 layout
+
+    this.anims.create({
+      key: 'turn',  // Assuming the middle frame is the 'turn' pose
+      frames: [{ key: 'player', frame: 5 }], // Example middle frame
+      frameRate: 20
+    });
 
     // Add cauldron
     this.cauldron = this.physics.add.sprite(200, 150, 'cauldron')
