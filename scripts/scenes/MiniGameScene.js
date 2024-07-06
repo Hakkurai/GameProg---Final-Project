@@ -25,6 +25,7 @@ class MiniGameScene extends Phaser.Scene {
       this.load.audio('dropSound', 'assets/audio/ingredientadd.mp3');
       this.load.audio('successSound', 'assets/audio/successSound.mp3');
       this.load.image('diaryBTN', 'assets/menuButtons/diaryBTN.png');
+      this.load.audio('messSound', 'assets/audio/messSound.mp3');
       const recipeImages = [
         'Adobo', 'Pastil', 'Pinakbet', 'Arrozcaldo', 'LechonManok'
     ];
@@ -40,7 +41,8 @@ class MiniGameScene extends Phaser.Scene {
       this.miniGameMusic = this.sound.add('miniGameMusic', { loop: true, volume: 0.5 });
       this.miniGameMusic.play();
       this.successSound = this.sound.add('successSound');
-      this.cauldron = this.add.image(650, 450, 'cauldron').setOrigin(0.5).setScale(1);
+      this.messSound = this.sound.add('messSound');
+      this.cauldron = this.add.image(650, 450, 'mgCauldron').setOrigin(0.5).setScale(1);
       this.ingredientsInCauldron = [];
       const ingredientsData = [
           { name: 'soysauce', x: 1020, y: 115 },
@@ -84,7 +86,7 @@ class MiniGameScene extends Phaser.Scene {
       
 
 
-      this.dropSound = this.sound.add('dropSound');
+      this.dropSound = this.sound.add('dropSound', {volume: 0.5});
 
       this.input.on('dragend', (pointer, gameObject) => {
           gameObject.clearTint();
@@ -153,7 +155,8 @@ class MiniGameScene extends Phaser.Scene {
         Pastil: ['soysauce', 'salt', 'pepper', 'oil', 'chicken', 'rice', 'garlic'],
         Pinakbet: ['soysauce', 'salt', 'pepper', 'oil', 'meat', 'garlic', 'onion2', 'eggplant', 'squash'],
         Arrozcaldo: ['soysauce', 'salt', 'pepper', 'oil', 'chicken', 'rice', 'garlic', 'onion2'],
-        LechonManok: ['soysauce', 'salt', 'pepper', 'oil', 'chicken', 'garlic', 'onion2']
+        LechonManok: ['soysauce', 'salt', 'pepper', 'oil', 'chicken', 'garlic', 'onion2'],
+        Nothing: [],
     };
     
     const sortedIngredients = this.ingredientsInCauldron.slice().sort(); 
@@ -165,60 +168,51 @@ class MiniGameScene extends Phaser.Scene {
 
     // Load the font and handle the message display
     WebFont.load({
-        custom: {
-            families: ['Starborn']
-        },
+        custom: { families: ['Starborn'] },
         active: () => {
-            let message = foundRecipe ? `You've Cooked ${foundRecipe}!` : "This is a mess!";
-            let messageColor = foundRecipe ? '#ffffff' : '#ff0000';
+            this.time.delayedCall(1000, () => {
+                let message = foundRecipe ? `You've Cooked ${foundRecipe}!` : "This is a mess!";
+                let messageColor = foundRecipe ? '#ffffff' : '#ff0000';
+                let soundToPlay = foundRecipe ? this.successSound : this.messSound; // Choose sound
 
-            const feedbackText = this.add.text(650, 200, message, {
-                fontFamily: 'Starborn',
-                fontSize: '32px',
-                color: messageColor,
-                align: 'center'
-            })
-            .setOrigin(0.5)
-            .setAlpha(0);
+                // Create text and recipe image
+                const feedbackText = this.add.text(650, 200, message, {
+                    fontFamily: 'Starborn', fontSize: '32px', color: messageColor, align: 'center'
+                }).setOrigin(0.5).setAlpha(0); 
 
-            let recipeImage = null;
-            if (foundRecipe) {
-                const recipeImageKey = foundRecipe.replace(/\s+/g, '_');
-                recipeImage = this.add.image(650, 288, recipeImageKey)
-                    .setOrigin(0.5)
-                    .setScale(0.15)
-                    .setAlpha(0);
-            }
+                let recipeImage = null;
+                if (foundRecipe) {
+                    const recipeImageKey = foundRecipe.replace(/\s+/g, '_');
+                    recipeImage = this.add.image(650, 288, recipeImageKey)
+                        .setOrigin(0.5).setScale(0.1).setAlpha(0);
+                }
 
-            this.tweens.add({
-                targets: [recipeImage, feedbackText].filter(item => item !== null),
-                alpha: 1,
-                duration: 1000,
-                onComplete: () => {
-                    this.tweens.add({
-                        targets: [recipeImage, feedbackText].filter(item => item !== null),
-                        alpha: 0,
-                        duration: 1000,
-                        delay: 4000,
-                        onComplete: () => {
-                            if (recipeImage) recipeImage.destroy();
-                            feedbackText.destroy();
+                // Fade in message, image, and play the sound
+                this.tweens.add({
+                    targets: [recipeImage, feedbackText].filter(item => item !== null),
+                    alpha: 1, duration: 1000,
+                    onStart: () => { soundToPlay.play(); }, // Play sound as the fade starts
+                    onComplete: () => {
+                        this.tweens.add({
+                            targets: [recipeImage, feedbackText].filter(item => item !== null),
+                            alpha: 0, duration: 1000, delay: 4000,
+                            onComplete: () => {
+                                if (recipeImage) recipeImage.destroy();
+                                feedbackText.destroy();
+                            }
+                        });
+                        this.ingredientsInCauldron = []; 
+
+                        if (foundRecipe) {
+                            const diaryUI = this.scene.get('DiaryUI') || this.scene.launch('DiaryUI'); 
+                            if (!this.discoveredRecipes.includes(foundRecipe)) {
+                                this.discoveredRecipes.push(foundRecipe);
+                                diaryUI.events.emit('recipe-discovered', foundRecipe); 
+                            }
                         }
-                    });
-                }
+                    }
+                });
             });
-
-            this.ingredientsInCauldron = [];
-            if (foundRecipe) {
-                this.successSound.play();
-
-                // Get or launch the DiaryUI scene
-                const diaryUI = this.scene.get('DiaryUI') || this.scene.launch('DiaryUI'); 
-                if (!this.discoveredRecipes.includes(foundRecipe)) {
-                    this.discoveredRecipes.push(foundRecipe);
-                    diaryUI.events.emit('recipe-discovered', foundRecipe); 
-                }
-            }
         }
     });
 }
