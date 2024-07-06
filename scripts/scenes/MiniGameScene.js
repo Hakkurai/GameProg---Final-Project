@@ -7,21 +7,26 @@ class MiniGameScene extends Phaser.Scene {
       this.load.image('background2', 'assets/background/bg2.png')
       this.load.image('soysauce', 'assets/minigameObjects/soysauce.png')
       this.load.image('vinegar', 'assets/minigameObjects/vinegar.png')
-      this.load.image('cauldron', 'assets/minigameObjects/mgCauldron.png')
+      this.load.image('mgCauldron', 'assets/minigameObjects/mgCauldron.png')
       this.load.image('salt', 'assets/minigameObjects/salt.png')
       this.load.image('sugar', 'assets/minigameObjects/sugar.png')
       this.load.image('pepper', 'assets/minigameObjects/pepper.png')
       this.load.image('oil', 'assets/minigameObjects/oil.png')
       this.load.image('meat', 'assets/minigameObjects/meat.png')
       this.load.image('chicken', 'assets/minigameObjects/chicken.png')
-      this.load.image('wand', 'assets/images/wand.webp');
+      this.load.image('rice', 'assets/minigameObjects/rice.png')
+      this.load.image('garlic', 'assets/minigameObjects/garlic.png')
+      this.load.image('onion2', 'assets/minigameObjects/onion2.png')
+      this.load.image('eggplant', 'assets/minigameObjects/eggplant.png')
+      this.load.image('squash', 'assets/minigameObjects/pumpkin.png')
+      this.load.image('wand', 'assets/images/cursor.webp');
       this.load.audio('miniGameMusic', 'assets/audio/miniGameMusic.mp3');
     }
   
     create() {
-      this.customCursor = this.add.image(0, 0, 'wand').setScale(0.45).setOrigin(0.15).setDepth(10);
+      this.customCursor = this.add.image(0, 0, 'wand').setScale(0.3).setOrigin(0.15).setDepth(10);
       this.input.setDefaultCursor('none');
-      this.add.image(520, 285, 'background2').setOrigin(0.4).setDisplaySize(1300, 720)
+      this.add.image(520, 288, 'background2').setOrigin(0.4).setDisplaySize(1300, 720)
 
       //bgm
       this.miniGameMusic = this.sound.add('miniGameMusic', { loop: true, volume: 0.5 });
@@ -30,21 +35,21 @@ class MiniGameScene extends Phaser.Scene {
       // Add cauldron
       this.cauldron = this.add.image(650, 450, 'cauldron')
         .setOrigin(0.5)
-        .setScale(0.5)
+        .setScale(1)
   
       // Add soysauce
-      this.soysauce = this.add.image(1020, 110, 'soysauce')
+      this.soysauce = this.add.image(1020, 115, 'soysauce')
         .setOrigin(0.5)
         .setScale(0.9)
         .setInteractive()
-        .setData('initialPosition', { x: 1020, y: 110 })
+        .setData('initialPosition', { x: 1020, y: 115 })
   
       // Add vinegar
-      this.vinegar = this.add.image(1105, 110, 'vinegar')
+      this.vinegar = this.add.image(1105, 113, 'vinegar')
         .setOrigin(0.5)
         .setScale(0.9)
         .setInteractive()
-        .setData('initialPosition', { x: 1105, y: 110 })
+        .setData('initialPosition', { x: 1105, y: 113 })
   
       // Add salt
       this.salt = this.add.image(1020, 310, 'salt')
@@ -68,18 +73,18 @@ class MiniGameScene extends Phaser.Scene {
         .setData('initialPosition', { x: 1190, y: 325 })
   
       // Add oil
-      this.oil = this.add.image(1180, 110, 'oil')
+      this.oil = this.add.image(1180, 115, 'oil')
         .setOrigin(0.5)
         .setScale(0.9)
         .setInteractive()
-        .setData('initialPosition', { x: 1180, y: 110 })
+        .setData('initialPosition', { x: 1180, y: 115 })
   
       // Add meat
-      this.meat = this.add.image(1190, 400, 'meat')
+      this.meat = this.add.image(1160, 540, 'meat')
         .setOrigin(0.5)
         .setScale(0.9)
         .setInteractive()
-        .setData('initialPosition', { x: 900, y: 150 })
+        .setData('initialPosition', { x: 1160, y: 540 })
   
       // Add chicken
       this.chicken = this.add.image(1020, 540, 'chicken')
@@ -87,9 +92,45 @@ class MiniGameScene extends Phaser.Scene {
         .setScale(0.9)
         .setInteractive()
         .setData('initialPosition', { x: 1020, y: 540 })
+
+      // Add rice
+      this.rice = this.add.image(160, 490, 'rice')
+        .setOrigin(0.5)
+        .setScale(0.9)
+        .setInteractive()
+        .setData('initialPosition', { x: 160, y: 490 })
+      
+      // Add garlic
+      this.garlic = this.add.image(120, 540, 'garlic')
+        .setOrigin(0.5)
+        .setScale(0.9)
+        .setInteractive()
+        .setData('initialPosition', { x: 120, y: 540 }) 
+
+      // Add onion
+      this.onion2 = this.add.image(80, 540, 'onion2')
+        .setOrigin(0.5)
+        .setScale(0.9)
+        .setInteractive()
+        .setData('initialPosition', { x: 80, y: 540 })
+
+      // Add eggplant
+      this.eggplant = this.add.image(200, 540, 'eggplant')
+        .setOrigin(0.5)
+        .setScale(0.9)
+        .setInteractive()
+        .setData('initialPosition', { x: 200, y: 540 })
+
+      // Add squash
+      this.squash = this.add.image(290, 550, 'squash')
+        .setOrigin(0.5)
+        .setScale(0.9)
+        .setInteractive()
+        .setData('initialPosition', { x: 290, y: 550 })
   
       // Enable drag and drop
-      this.input.setDraggable([this.soysauce, this.vinegar, this.salt, this.sugar, this.pepper, this.oil, this.meat, this.chicken])
+      this.input.setDraggable([this.soysauce, this.vinegar, this.salt, this.sugar, this.pepper, this.oil, this.meat, this.chicken,
+        this.rice, this.garlic, this.onion2, this.eggplant, this.squash])
   
       // Add drag event listeners
       this.input.on('dragstart', (pointer, gameObject) => {

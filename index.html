@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Maharuyong Hardin</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/cheeseburger.png">
     <script src="scripts/phaser.min.js"></script>
-    <script type= "module" src="scripts/main.js"></script>
+    <script type="module" src="scripts/main.js"></script>
 
     <style>
         body {
@@ -13,12 +14,16 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #000;
+            background-image: url('assets/background/sky.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
         }
 
         canvas {
-            margin: auto;
-            display: block;
+            border: 10px solid #dbacbc;
+            position: relative; 
+            border-radius: 15px; /* Rounded corners with 15px radius */
         }
     </style>
 </head>
