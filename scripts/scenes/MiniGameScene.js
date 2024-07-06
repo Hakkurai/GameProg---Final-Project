@@ -14,10 +14,18 @@ class MiniGameScene extends Phaser.Scene {
       this.load.image('oil', 'assets/minigameObjects/oil.png')
       this.load.image('meat', 'assets/minigameObjects/meat.png')
       this.load.image('chicken', 'assets/minigameObjects/chicken.png')
+      this.load.image('wand', 'assets/images/wand.webp');
+      this.load.audio('miniGameMusic', 'assets/audio/miniGameMusic.mp3');
     }
   
     create() {
+      this.customCursor = this.add.image(0, 0, 'wand').setScale(0.45).setOrigin(0.15).setDepth(10);
+      this.input.setDefaultCursor('none');
       this.add.image(520, 285, 'background2').setOrigin(0.4).setDisplaySize(1300, 720)
+
+      //bgm
+      this.miniGameMusic = this.sound.add('miniGameMusic', { loop: true, volume: 0.5 });
+        this.miniGameMusic.play(); 
   
       // Add cauldron
       this.cauldron = this.add.image(650, 450, 'cauldron')
@@ -129,7 +137,8 @@ class MiniGameScene extends Phaser.Scene {
     }
   
     update() {
-      // Add any necessary updates here
+      const pointer = this.input.activePointer;
+      this.customCursor.setPosition(pointer.x, pointer.y);
     }
   }
   

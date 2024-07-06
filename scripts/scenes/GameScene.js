@@ -10,23 +10,30 @@ class GameScene extends Phaser.Scene {
     this.load.image('onion', 'assets/objects/onion.png');
     this.load.image('beetroot', 'assets/objects/beetroot.png');
     this.load.image('background', 'assets/background/bg.png');
-    this.load.audio('backgroundMusic', 'assets/audio/backgroundMusic.mp3'); 
+    this.load.audio('backgroundMusic', 'assets/audio/backgroundMusic.mp3');
+    this.load.image('customCursor', 'assets/images/cursor.webp'); 
+    this.load.audio('walk', 'assets/audio/walk.mp3');
   }
 
   create() {
+    //cursor
+    this.customCursor = this.add.image(0, 0, 'customCursor').setOrigin(0.5).setDepth(100).setScale(0.1); // High depth for visibility
+    this.input.setDefaultCursor('none'); // Hide the default cursor
     //bgm
-    this.backgroundMusic = this.sound.add('backgroundMusic', { loop: true });
+    this.backgroundMusic = this.sound.add('backgroundMusic', { loop: true, volume: 0.5 });
   this.backgroundMusic.play(); 
     // Physics and World Setup
     this.physics.world.gravity.y = 0;
-    this.physics.world.setBounds(0, 0, 1200, 800); 
+    this.physics.world.setBounds(0, 0, 1200, 600); 
 
     // Background
-    this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(1300, 720);
+    this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(1900, 1020);
 
     // Player
-    this.player = this.physics.add.sprite(400, 300, 'player').setScale(0.03).setOrigin(0.5, 0.5);
+    this.player = this.physics.add.sprite(400, 300, 'player').setDisplaySize(84, 84).setDepth(1).setOrigin(0.5, 0.5);
     this.player.setCollideWorldBounds(true);
+    //walk
+    this.walkSound = this.sound.add('walk', { loop: true, volume: 0.5 });
 
     // Player animations 
     this.anims.create({ key: 'down',  frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }), frameRate: 5, repeat: -1 });
@@ -36,7 +43,7 @@ class GameScene extends Phaser.Scene {
     this.anims.create({ key: 'turn',  frames: [{ key: 'player', frame: 0 }], frameRate: 20 }); 
 
     // Objects (cauldron, vegetables)
-    this.cauldron = this.physics.add.sprite(200, 150, 'cauldron').setScale(0.1).setCollideWorldBounds(true);
+    this.cauldron = this.physics.add.sprite(200, 150, 'cauldron').setScale(0.1).setDepth(0).setCollideWorldBounds(true);
     this.pumpkin = this.physics.add.sprite(600, 450, 'pumpkin').setScale(0.03).setCollideWorldBounds(true);
     this.onion = this.physics.add.sprite(400, 450, 'onion').setScale(0.03).setCollideWorldBounds(true);
     this.beetroot = this.physics.add.sprite(400, 200, 'beetroot').setScale(0.03).setCollideWorldBounds(true);
@@ -69,8 +76,8 @@ class GameScene extends Phaser.Scene {
         this.beetroot.disableBody(true, true);
       } else if (this.checkOverlap(this.player, this.cauldron)) {
         if (this.pumpkinCollected && this.onionCollected && this.beetrootCollected) {
-          console.log('Player has all vegetables and can proceed to the minigame');
-          this.player.setVisible(false); // Hide player before entering MiniGameScene
+          this.stopAudio(); // Stop GameScene's audio
+          this.player.setVisible(false);
           this.scene.pause();
           this.scene.launch('MiniGameScene');
         } else {
@@ -102,6 +109,9 @@ class GameScene extends Phaser.Scene {
 
     let velocityX = 0;
     let velocityY = 0;
+     const pointer = this.input.activePointer;
+    const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y); // Get world position under cursor
+    this.customCursor.setPosition(worldPoint.x, worldPoint.y);
 
     const isSprinting = this.cursors.shift.isDown;
 
@@ -136,8 +146,20 @@ class GameScene extends Phaser.Scene {
     }
   
     this.player.setVelocity(velocityX, velocityY);
-    
+
+    if (velocityX !== 0 || velocityY !== 0) {
+      if (!this.walkSound.isPlaying) {
+        this.walkSound.play();
+      }
+      this.walkSound.setRate(isSprinting ? 1.5 : 1.0); // 1.5x faster when sprinting
+    } else {
+      this.walkSound.stop();
+    }
   }
+  stopAudio() {
+    this.backgroundMusic.stop(); // Stop the background music
+    this.walkSound.stop(); // Stop the walking sound
+}
 
   checkOverlap(spriteA, spriteB) {
     const boundsA = spriteA.getBounds();
