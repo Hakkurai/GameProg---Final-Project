@@ -27,7 +27,7 @@ class GameScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, 1200, 600); 
 
     // Background
-    this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(1900, 1020);
+    this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(1300, 700);
 
     // Player
     this.player = this.physics.add.sprite(400, 300, 'player').setDisplaySize(84, 84).setDepth(1).setOrigin(0.5, 0.5);
