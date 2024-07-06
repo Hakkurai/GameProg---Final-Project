@@ -19,12 +19,14 @@ class MiniGameScene extends Phaser.Scene {
       this.load.image('onion2', 'assets/minigameObjects/onion2.png')
       this.load.image('eggplant', 'assets/minigameObjects/eggplant.png')
       this.load.image('squash', 'assets/minigameObjects/pumpkin.png')
-      this.load.image('wand', 'assets/images/cursor.webp');
+      this.load.image('cursor', 'assets/images/cursor.png');
+      this.load.image('dragCursor', 'assets/images/drag.png'); 
       this.load.audio('miniGameMusic', 'assets/audio/miniGameMusic.mp3');
+      
     }
   
     create() {
-      this.customCursor = this.add.image(0, 0, 'wand').setScale(0.3).setOrigin(0.15).setDepth(10);
+      // this.customCursor = this.add.image(0, 0, 'cursor').setScale(0.05).setOrigin(0.2).setDepth(10);
       this.input.setDefaultCursor('none');
       this.add.image(520, 288, 'background2').setOrigin(0.4).setDisplaySize(1300, 720)
 
@@ -127,6 +129,27 @@ class MiniGameScene extends Phaser.Scene {
         .setScale(0.9)
         .setInteractive()
         .setData('initialPosition', { x: 290, y: 550 })
+
+
+        //cursor
+        this.customCursor = this.add.image(0, 0, 'cursor').setScale(0.05).setOrigin(0.2).setDepth(10);
+    this.input.setDefaultCursor('none');
+
+    this.dragCursor = this.add.image(0, 0, 'dragCursor').setScale(0.05).setOrigin(0.2).setDepth(11);
+    this.dragCursor.setVisible(false);
+
+    this.input.on('pointerdown', () => { 
+      this.customCursor.setVisible(false);
+      this.dragCursor.setVisible(true);
+    });
+
+    this.input.on('pointerup', () => {
+      this.customCursor.setVisible(true);
+      this.dragCursor.setVisible(false);
+    });
+
+    this.ingredientsInCauldron = [];
+    
   
       // Enable drag and drop
       this.input.setDraggable([this.soysauce, this.vinegar, this.salt, this.sugar, this.pepper, this.oil, this.meat, this.chicken,
@@ -143,16 +166,37 @@ class MiniGameScene extends Phaser.Scene {
       })
   
       this.input.on('dragend', (pointer, gameObject) => {
-        gameObject.clearTint()
+        gameObject.clearTint();
   
         // Check if the object is dropped on the cauldron
         if (this.checkOverlap(gameObject, this.cauldron)) {
-          // Reset position if dropped on cauldron
-          const initialPosition = gameObject.getData('initialPosition')
-          gameObject.x = initialPosition.x
-          gameObject.y = initialPosition.y
+          // Remove from draggable list
+          this.input.setDraggable(gameObject, false);
+  
+          // Add to the ingredientsInCauldron array
+          this.ingredientsInCauldron.push(gameObject.texture.key);
+  
+          // Emit an event to notify other parts of your game (optional)
+          this.events.emit('ingredient-added', gameObject.texture.key);
+  
+          // Remove the object from the scene
+          gameObject.destroy();
+        } else {
+          // Add a tween for the falling effect (if not on cauldron)
+          this.tweens.add({
+            targets: gameObject,
+            y: this.game.config.height + 100,  
+            duration: 1000, 
+            ease: 'Bounce',
+            onComplete: () => {
+              const initialPosition = gameObject.getData('initialPosition');
+              gameObject.x = initialPosition.x;
+              gameObject.y = initialPosition.y;
+            }
+          });
         }
-      })
+      });
+     
   
       this.cursors = this.input.keyboard.createCursorKeys()
   
@@ -179,8 +223,12 @@ class MiniGameScene extends Phaser.Scene {
   
     update() {
       const pointer = this.input.activePointer;
-      this.customCursor.setPosition(pointer.x, pointer.y);
+      if (this.dragCursor.visible) {
+        this.dragCursor.setPosition(pointer.x, pointer.y);
+      } else {
+        this.customCursor.setPosition(pointer.x, pointer.y);
     }
+  }
   }
   
   export default MiniGameScene
