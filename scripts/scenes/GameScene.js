@@ -11,13 +11,6 @@ class GameScene extends Phaser.Scene {
     this.load.image('grass2', 'assets/objects/grass.png');
     this.load.image('grass3', 'assets/objects/grass.png');
     this.load.image('fence', 'assets/objects/fence.png');
-    this.load.image('fence2', 'assets/objects/fence.png');
-    this.load.image('fence3', 'assets/objects/fence.png');
-    this.load.image('fence4', 'assets/objects/fence.png');
-    this.load.image('fence5', 'assets/objects/fence.png');
-    this.load.image('fence6', 'assets/objects/fence.png');
-    this.load.image('fence7', 'assets/objects/fence.png');
-    this.load.image('fence8', 'assets/objects/fence.png');
     this.load.image('cauldron', 'assets/minigameObjects/mgCauldron.png');
     this.load.image('pumpkin', 'assets/objects/pumpkin.png');
     this.load.image('onion', 'assets/objects/onion1.png');
@@ -37,14 +30,14 @@ class GameScene extends Phaser.Scene {
     this.backgroundMusic.play(); 
     // Physics and World Setup
     this.physics.world.gravity.y = 0;
-    this.physics.world.setBounds(0, 0, 1200, 600); 
+    this.physics.world.setBounds(0, 0, 1300, 720); 
 
     // Background
-    this.add.image(400, 300, 'background').setOrigin(0.5).setDisplaySize(1300, 700);
+    this.add.image(0, 0, 'background').setOrigin(0).setDisplaySize(1300, 720);
 
     // Player
     this.player = this.physics.add.sprite(400, 300, 'player').setDisplaySize(84, 84).setDepth(1).setOrigin(0.5, 0.5);
-    this.player.setCollideWorldBounds(true);
+    this.player
     //walk
     this.walkSound = this.sound.add('walk', { loop: true, volume: 0.5 });
 
@@ -56,27 +49,47 @@ class GameScene extends Phaser.Scene {
     this.anims.create({ key: 'turn',  frames: [{ key: 'player', frame: 0 }], frameRate: 20 }); 
 
     // Objects (cauldron, vegetables, objects)
-    this.tree = this.physics.add.sprite(100, 50, 'tree').setScale(0.2).setDepth(0).setCollideWorldBounds(true);
-    this.tree = this.physics.add.sprite(700, 305, 'tree2').setScale(0.2).setDepth(0).setCollideWorldBounds(true);
-    this.grass = this.physics.add.sprite(105, 300, 'grass').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.grass = this.physics.add.sprite(650, 400, 'grass2').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.grass = this.physics.add.sprite(420, 200, 'grass3').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.fence = this.physics.add.sprite(100, 600, 'fence').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.fence2 = this.physics.add.sprite(205, 600, 'fence2').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.fence3 = this.physics.add.sprite(310, 600, 'fence3').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.fence3 = this.physics.add.sprite(410, 600, 'fence4').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.fence3 = this.physics.add.sprite(510, 600, 'fence5').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.fence3 = this.physics.add.sprite(610, 600, 'fence6').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.fence3 = this.physics.add.sprite(710, 600, 'fence7').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.fence3 = this.physics.add.sprite(810, 600, 'fence8').setScale(0.05).setDepth(0).setCollideWorldBounds(true);
-    this.cauldron = this.physics.add.sprite(250, 270, 'cauldron').setScale(0.3).setDepth(0).setCollideWorldBounds(true);
-    this.pumpkin = this.physics.add.sprite(610, 430, 'pumpkin').setScale(0.03).setCollideWorldBounds(true);
-    this.onion = this.physics.add.sprite(100, 290, 'onion').setScale(0.03).setCollideWorldBounds(true);
-    this.beetroot = this.physics.add.sprite(400, 200, 'beetroot').setScale(0.03).setCollideWorldBounds(true);
+    this.tree = this.physics.add.sprite(100, 50, 'tree').setScale(0.2).setDepth(0)
+    this.tree = this.physics.add.sprite(700, 305, 'tree2').setScale(0.2).setDepth(0)
+    //grass
+    this.grass = this.physics.add.sprite(105, 300, 'grass').setScale(0.05).setDepth(0)
+    this.grass = this.physics.add.sprite(650, 400, 'grass2').setScale(0.05).setDepth(0)
+    this.grass = this.physics.add.sprite(420, 200, 'grass3').setScale(0.05).setDepth(0)
+    //fences
+    this.fences = this.physics.add.staticGroup(); // Static group for better performance
+    const fenceTexture = 'fence'; // Single texture
+    const fenceScale = 0.05;
+
+    const fencePositions = [
+      { x: 100, y: 700 },
+      { x: 205, y: 700 },
+      { x: 310, y: 700 },
+      { x: 410, y: 700 },
+      { x: 510, y: 700 },
+      { x: 610, y: 700 },
+      { x: 710, y: 700 },
+      { x: 810, y: 700 },
+      { x: 910, y: 700 },
+      { x: 1010, y: 700 },
+      { x: 1110, y: 700 },
+      { x: 1210, y: 700 },
+      
+    ];
+    fencePositions.forEach(pos => {
+      this.fences.create(pos.x, pos.y, fenceTexture)
+                .setScale(fenceScale)
+                .setDepth(1)
+                .refreshBody(); // Important: Refresh the body for correct physics
+    });
+    //foodies
+    this.cauldron = this.physics.add.sprite(250, 270, 'cauldron').setScale(0.3).setDepth(0)
+    this.pumpkin = this.physics.add.sprite(610, 430, 'pumpkin').setScale(0.03)
+    this.onion = this.physics.add.sprite(100, 290, 'onion').setScale(0.03)
+    this.beetroot = this.physics.add.sprite(400, 200, 'beetroot').setScale(0.03)
 
     // Camera & Zoom
     this.cameras.main.startFollow(this.player);
-    this.cameras.main.setZoom(2);
+    //this.cameras.main.setZoom(2);
 
     // Cursor Keys
     this.cursors = this.input.keyboard.createCursorKeys();
