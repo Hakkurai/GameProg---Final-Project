@@ -50,9 +50,9 @@ class MainMenuScene extends Phaser.Scene {
 
   }
   startGame() {
-    this.scene.start('MiniGameScene')
+    this.scene.start('GameScene')
     this.menuMusic.stop(); // Stop menu music
-    this.scene.start('MiniGameScene');
+    this.scene.start('GameScene');
   }
 
   quitGame() {
