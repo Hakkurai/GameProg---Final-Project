@@ -155,10 +155,13 @@ class MiniGameScene extends Phaser.Scene {
         Arrozcaldo: ['soysauce', 'salt', 'pepper', 'oil', 'chicken', 'rice', 'garlic', 'onion2'],
         LechonManok: ['soysauce', 'salt', 'pepper', 'oil', 'chicken', 'garlic', 'onion2']
     };
+    
+    const sortedIngredients = this.ingredientsInCauldron.slice().sort(); 
 
-    const foundRecipe = Object.keys(recipes).find(recipeName =>
-        recipes[recipeName].every(ingredient => this.ingredientsInCauldron.includes(ingredient))
-    );
+    const foundRecipe = Object.keys(recipes).find(recipeName => {
+      const sortedRecipeIngredients = recipes[recipeName].slice().sort();
+      return JSON.stringify(sortedIngredients) === JSON.stringify(sortedRecipeIngredients);
+  });
 
     // Load the font and handle the message display
     WebFont.load({
